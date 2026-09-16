@@ -27,6 +27,7 @@ export default function ConfigPanel() {
   const [rawDays, setRawDays] = useState('')
   const [logSize, setLogSize] = useState('')
   const [dryRun, setDryRun] = useState(true)
+  const [zoneSensors, setZoneSensors] = useState(false)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
 
@@ -37,6 +38,7 @@ export default function ConfigPanel() {
       setRawDays(String(c.raw_retention_days ?? 7))
       setLogSize(fmtBytes(c.log_retention_max_bytes))
       setDryRun(c.ha_mqtt_dry_run)
+      setZoneSensors(c.ha_zone_sensors ?? false)
     })
   }, [])
 
@@ -52,12 +54,14 @@ export default function ConfigPanel() {
       const bytes = parseBytes(logSize)
       if (bytes !== null && bytes > 0) updates.log_retention_max_bytes = bytes
       updates.ha_mqtt_dry_run = dryRun
+      updates.ha_zone_sensors = zoneSensors
       const c = await setAppConfig(updates)
       setCfg(c)
       setDays(String(c.history_retention_days))
       setRawDays(String(c.raw_retention_days ?? 7))
       setLogSize(fmtBytes(c.log_retention_max_bytes))
       setDryRun(c.ha_mqtt_dry_run)
+      setZoneSensors(c.ha_zone_sensors ?? false)
       setMsg('Sauvegarde')
       setTimeout(() => setMsg(''), 2000)
     } catch (e: any) {
@@ -114,6 +118,19 @@ export default function ConfigPanel() {
         </label>
         <span className="config-toggle-hint">
           {dryRun ? 'Desactive — commandes logguees uniquement' : 'Active — commandes envoyees a la PAC'}
+        </span>
+      </div>
+      <div className="config-toggle-row">
+        <label className="config-toggle">
+          <input
+            type="checkbox"
+            checked={zoneSensors}
+            onChange={(e) => setZoneSensors(e.target.checked)}
+          />
+          <span>Exposer temperatures zones en sensors HA</span>
+        </label>
+        <span className="config-toggle-hint">
+          {zoneSensors ? 'Active — un sensor par zone dans Home Assistant' : 'Desactive — pas de sensors zones'}
         </span>
       </div>
       <div className="config-actions">

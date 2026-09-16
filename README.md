@@ -146,6 +146,7 @@ L'add-on est disponible dans le dépôt `aldes-haos-addons`.
 | `mode` | `bridge` | Mode initial (proxy/bridge) |
 | `mqtt_port` | `18883` | Port interne du listener MQTT/TLS |
 | `box_ip` | (vide) | IP de la box Aldes (filtre les règles iptables) |
+| `ha_zone_sensors` | `false` | Expose les températures de zones (MT0-MT9) en tant que sensors HA |
 
 **Données persistantes** (`/config/aldes/`) :
 
@@ -232,6 +233,21 @@ de la PAC en temps réel, basé sur les clés santé de la télémétrie Aldes.
 L'alerte Defr est automatiquement masquée ("N/A (clim off)") quand le compresseur est arrêt.
 
 **API** : `GET /api/config` retourne `health` dans le snapshot avec les clés santé.
+
+## Températures de zones (sensors HA)
+
+Lorsque l'option `ha_zone_sensors` est activée (via le panneau Configuration ou `config.yaml`),
+le bridge expose les températures de chaque zone active (MT0-MT9) en tant que **sensors HA**
+via MQTT auto-discovery.
+
+| Sensor | Unité | Description |
+|--------|-------|-------------|
+| `sensor.aldes_t_one_zone_N_temperature` | °C | Température de la zone N |
+
+Seules les zones actives (température ET consigne présentes dans la télémétrie) sont exposées.
+Les zones avec `MT=0` et `UsC=0` sont automatiquement exclues pour éviter les entités fantômes.
+
+Les sensors sont rattachés au device "Aldes Bridge" dans HA et mis à jour à chaque télémétrie.
 
 ## Démarrage
 
