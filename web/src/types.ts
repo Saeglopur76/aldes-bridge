@@ -190,6 +190,7 @@ export interface AppConfig {
   raw_retention_days: number
   log_retention_max_bytes: number
   ha_mqtt_dry_run: boolean
+  ha_zone_sensors: boolean
 }
 
 export interface HealthData {

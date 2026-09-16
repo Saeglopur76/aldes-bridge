@@ -48,7 +48,7 @@ def detect_active_zones(data):
 
 
 def build_discovery_config(device_id, profile, prefix="aldes", data=None,
-                           previous_active_zones=None):
+                           previous_active_zones=None, zone_sensors=False):
     configs = []
     discovery_prefix = "homeassistant"
 
@@ -383,5 +383,30 @@ def build_discovery_config(device_id, profile, prefix="aldes", data=None,
             "payload_not_available": "offline",
         }
         configs.append((f"{discovery_prefix}/sensor/{suffix}/config", json.dumps(vent_config, ensure_ascii=False)))
+
+    if zone_sensors:
+        for zone_idx in active_zones:
+            zone_temp_config = {
+                "name": f"Zone {zone_idx + 1} Température",
+                "unique_id": f"aldes_{device_id}_zone{zone_idx}_temp_sensor",
+                "state_topic": f"{prefix}/state/zone{zone_idx}/temperature",
+                "unit_of_measurement": "°C",
+                "device_class": "temperature",
+                "device": device_info,
+                "icon": "mdi:thermometer",
+                "availability_topic": f"{prefix}/state/available",
+                "payload_available": "online",
+                "payload_not_available": "offline",
+            }
+            configs.append((
+                f"{discovery_prefix}/sensor/zone{zone_idx}_temp/config",
+                json.dumps(zone_temp_config, ensure_ascii=False),
+            ))
+
+        deactivated = set(previous_active_zones or []) - set(active_zones)
+        for zi in deactivated:
+            configs.append((
+                f"{discovery_prefix}/sensor/zone{zi}_temp/config", "",
+            ))
 
     return configs

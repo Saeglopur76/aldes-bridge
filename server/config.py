@@ -12,6 +12,7 @@ DEFAULTS = {
     "raw_retention_days": 7,
     "log_retention_max_bytes": 25 * 1024 * 1024,
     "ha_mqtt_dry_run": False,
+    "ha_zone_sensors": False,
 }
 
 RANGES = {

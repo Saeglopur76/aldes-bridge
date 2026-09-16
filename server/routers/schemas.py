@@ -118,6 +118,7 @@ class SettingsBody(BaseModel):
     raw_retention_days: int = None
     log_retention_max_bytes: int = None
     ha_mqtt_dry_run: bool = None
+    ha_zone_sensors: bool = None
 
 
 class TestInjectBody(BaseModel):
