@@ -38,4 +38,8 @@ def api_settings_set(request: Request, body: SettingsBody):
         "kind": "status", "ts": iso(),
         "note": f"settings mis a jour : {list(updates.keys())}",
     })
+    if "ha_zone_sensors" in updates:
+        ha_client = getattr(st, "_ha_client", None)
+        if ha_client is not None:
+            _log.info("ha-discovery: ha_zone_sensors=%s (toggle UI)", updates["ha_zone_sensors"])
     return {"settings": st.config.get()}

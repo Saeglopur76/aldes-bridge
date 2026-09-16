@@ -371,9 +371,11 @@ class HADiscoveryClient(threading.Thread):
         data = next(iter(telemetry.values()), {}) if telemetry else None
         profile = getattr(self.state, "profile", None)
         active_zones = detect_active_zones(data) if data else []
+        zone_sensors = self.state.config.get("ha_zone_sensors") if self.state.config else False
         configs = build_discovery_config(
             self._device_id, profile, self.prefix, data,
             previous_active_zones=self._last_active_zones,
+            zone_sensors=zone_sensors,
         )
         for topic, payload in configs:
             self._safe_send(mqtt.build_publish(topic, payload, qos=1, retain=True))

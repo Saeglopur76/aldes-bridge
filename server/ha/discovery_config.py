@@ -43,12 +43,19 @@ def detect_active_zones(data):
         mt = data.get(f"MT{i}")
         usc = data.get(f"UsC{i}")
         if mt is not None and usc is not None:
+            try:
+                mt_val = float(mt)
+                usc_val = float(usc)
+            except (TypeError, ValueError):
+                continue
+            if mt_val == 0 and usc_val == 0:
+                continue
             zones.append(i)
     return zones
 
 
 def build_discovery_config(device_id, profile, prefix="aldes", data=None,
-                           previous_active_zones=None):
+                           previous_active_zones=None, zone_sensors=False):
     configs = []
     discovery_prefix = "homeassistant"
 
@@ -72,9 +79,9 @@ def build_discovery_config(device_id, profile, prefix="aldes", data=None,
     temp_step = climate_entities[0].get("temp_step", 1) if climate_entities else 1
 
     if previous_active_zones is not None:
-        deactivated = set(previous_active_zones) - set(active_zones)
-        for zi in deactivated:
-            configs.append((f"{discovery_prefix}/climate/aldes_zone{zi}/config", ""))
+        for zi in range(10):
+            if zi not in active_zones:
+                configs.append((f"{discovery_prefix}/climate/aldes_zone{zi}/config", ""))
 
     for zone_idx in active_zones:
         zone_label = f"Zone {zone_idx + 1}"
@@ -383,5 +390,30 @@ def build_discovery_config(device_id, profile, prefix="aldes", data=None,
             "payload_not_available": "offline",
         }
         configs.append((f"{discovery_prefix}/sensor/{suffix}/config", json.dumps(vent_config, ensure_ascii=False)))
+
+    if zone_sensors:
+        for zone_idx in active_zones:
+            zone_temp_config = {
+                "name": f"Zone {zone_idx + 1} Température",
+                "unique_id": f"aldes_{device_id}_zone{zone_idx}_temp_sensor",
+                "state_topic": f"{prefix}/state/zone{zone_idx}/temperature",
+                "unit_of_measurement": "°C",
+                "device_class": "temperature",
+                "device": device_info,
+                "icon": "mdi:thermometer",
+                "availability_topic": f"{prefix}/state/available",
+                "payload_available": "online",
+                "payload_not_available": "offline",
+            }
+            configs.append((
+                f"{discovery_prefix}/sensor/zone{zone_idx}_temp/config",
+                json.dumps(zone_temp_config, ensure_ascii=False),
+            ))
+
+        for zi in range(10):
+            if zi not in active_zones:
+                configs.append((
+                    f"{discovery_prefix}/sensor/zone{zi}_temp/config", "",
+                ))
 
     return configs
