@@ -1,1 +1,60 @@
 
+id: deefly-cube
+name: "Aldes DeeFly Cube"
+description: "VMC double flux Aldes DeeFly Cube (Connect Box)"
+type: vmc
+
+products:
+  98D863426510_AIR:   # adapter selon vos _pid observés
+    name: "DeeFly Cube"
+    reference_fields: []
+
+telemetry:
+  modemid: product.modem
+  productid: product.serial_number
+  dt: product._upd_at
+  outside_temp_field: outside_tpt
+  extract_temp_field: ext_tpt
+  reject_temp_field: reject_tpt
+  extract_speed_field: extf_spd
+  supply_speed_field: vi_spd
+  extract_flow_field: extf_flw
+  speed_setpoint_field: set_spd
+  mode_field: current_mode
+  filter_field: dtb_ind
+
+speed_modes:
+  - index: 0
+    code: "0"
+    label: "Arrêt / Absence"
+  - index: 1
+    code: "1"
+    label: "Vitesse 1"
+  - index: 2
+    code: "2"
+    label: "Vitesse 2"
+  - index: 3
+    code: "3"
+    label: "Vitesse 3"
+  - index: 4
+    code: "4"
+    label: "Boost"
+
+commands:
+  - id: set_speed
+    label: "Changer la vitesse VMC"
+    method: "À CONFIRMER"          # voir étape 2
+    topic_pattern: "devices/{client_id}/messages/devicebound"
+    params:
+      - name: speed
+        type: number
+        min: 0
+        max: 4
+        step: 1
+
+ui:
+  quick_modes:
+    - field: speed_modes
+      label: "Vitesse"
+  show_thermostats: false
+  show_vacations: true
