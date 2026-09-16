@@ -79,9 +79,9 @@ def build_discovery_config(device_id, profile, prefix="aldes", data=None,
     temp_step = climate_entities[0].get("temp_step", 1) if climate_entities else 1
 
     if previous_active_zones is not None:
-        deactivated = set(previous_active_zones) - set(active_zones)
-        for zi in deactivated:
-            configs.append((f"{discovery_prefix}/climate/aldes_zone{zi}/config", ""))
+        for zi in range(10):
+            if zi not in active_zones:
+                configs.append((f"{discovery_prefix}/climate/aldes_zone{zi}/config", ""))
 
     for zone_idx in active_zones:
         zone_label = f"Zone {zone_idx + 1}"
@@ -410,10 +410,10 @@ def build_discovery_config(device_id, profile, prefix="aldes", data=None,
                 json.dumps(zone_temp_config, ensure_ascii=False),
             ))
 
-        deactivated = set(previous_active_zones or []) - set(active_zones)
-        for zi in deactivated:
-            configs.append((
-                f"{discovery_prefix}/sensor/zone{zi}_temp/config", "",
-            ))
+        for zi in range(10):
+            if zi not in active_zones:
+                configs.append((
+                    f"{discovery_prefix}/sensor/zone{zi}_temp/config", "",
+                ))
 
     return configs
