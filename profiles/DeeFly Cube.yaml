@@ -1,11 +1,11 @@
 
 id: deefly-cube
 name: "Aldes DeeFly Cube"
-description: "VMC double flux Aldes DeeFly Cube (Connect Box)"
+description: "VMC Aldes DeeFly Cube"
 type: vmc
 
 products:
-  98D863426510_AIR:   # adapter selon vos _pid observés
+  DEEFLYCUBE_AIR:
     name: "DeeFly Cube"
     reference_fields: []
 
@@ -43,7 +43,7 @@ speed_modes:
 commands:
   - id: set_speed
     label: "Changer la vitesse VMC"
-    method: "À CONFIRMER"          # voir étape 2
+    method: changeVitesse
     topic_pattern: "devices/{client_id}/messages/devicebound"
     params:
       - name: speed
