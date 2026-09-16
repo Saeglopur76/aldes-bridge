@@ -43,6 +43,13 @@ def detect_active_zones(data):
         mt = data.get(f"MT{i}")
         usc = data.get(f"UsC{i}")
         if mt is not None and usc is not None:
+            try:
+                mt_val = float(mt)
+                usc_val = float(usc)
+            except (TypeError, ValueError):
+                continue
+            if mt_val == 0 and usc_val == 0:
+                continue
             zones.append(i)
     return zones
 
