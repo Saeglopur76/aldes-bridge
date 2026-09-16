@@ -8,7 +8,7 @@ interface Props {
   pollMs?: number
   clientId?: string | null
   connected?: boolean
-  consignes?: Record<string, { requested: number; confirmed: boolean; ts?: string }>
+  consignes?: Record<string, { requested: number; confirmed: boolean; attempts?: number; ts?: string }>
   profile?: DeviceProfile | null
 }
 
@@ -426,6 +426,9 @@ export default function TempsPanel({ pollMs = 5000, clientId, connected, consign
                         {isPending && (
                           <div className={styles.pending}>
                             demandé {fmtDeg(entry.requested, 1)}
+                            {(entry.attempts ?? 0) > 0 && (
+                              <span> (tentative {entry.attempts}/2)</span>
+                            )}
                           </div>
                         )}
                       </td>
