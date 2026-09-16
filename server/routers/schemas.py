@@ -50,6 +50,17 @@ class HealthData(BaseModel):
     mfac: int | None = None
     mfec: int | None = None
     defr: int | None = None
+    uam: float | None = None
+    text_ext: float | None = None
+    rvei: float | None = None
+    tain: float | None = None
+    tahu: float | None = None
+    tahl: float | None = None
+    tehg: float | None = None
+    tehl: float | None = None
+    tehu: float | None = None
+    tueh: float | None = None
+    thga: float | None = None
 
 
 class ConfigSnapshot(BaseModel):

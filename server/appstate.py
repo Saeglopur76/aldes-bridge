@@ -15,7 +15,7 @@ from .version import SERVER_VERSION
 _CONN_CTX = threading.local()
 
 # Cles de sante a extraire et persister separement dans telemetry.json.
-_HEALTH_KEYS = {"PreH", "dHi", "dLo", "HPC", "MfAc", "MfEc", "Defr", "UAM", "Text", "RVeI"}
+_HEALTH_KEYS = {"PreH", "dHi", "dLo", "HPC", "MfAc", "MfEc", "Defr", "UAM", "Text", "RVeI", "TAin", "TAHU", "TAHL", "TEHG", "TEHL", "TEHU", "TUeH", "THGa"}
 
 
 def set_conn_ctx(session=None, host=None):
@@ -569,6 +569,14 @@ class AppState:
                 ("UAM", "uam"),
                 ("Text", "text_ext"),
                 ("RVeI", "rvei"),
+                ("TAin", "tain"),
+                ("TAHU", "tahu"),
+                ("TAHL", "tahl"),
+                ("TEHG", "tehg"),
+                ("TEHL", "tehl"),
+                ("TEHU", "tehu"),
+                ("TUeH", "tueh"),
+                ("THGa", "thga"),
             ):
                 val = data.get(key)
                 if val is not None:
