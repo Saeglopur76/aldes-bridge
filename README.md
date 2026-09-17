@@ -228,9 +228,12 @@ de la PAC en temps réel, basé sur les clés santé de la télémétrie Aldes.
 | État compresseur | MfAc, MfEc | Marche/arrêt compresseur, mode eau (arrêt/marche/boost) |
 | Pressions circuit | PreH, dHi, dLo | Pression haute (bar), delta haut/bas |
 | Environnement | Text, RVeI | Température extérieure (°C), vitesse ventilateur (tr/min) |
+| Températures avancées | TAin, TAHU, TAHL, TEHG, TEHL, TEHU, TUeH, THGa | Air entrée, échangeur (bas/haut/gaz/liquide/haut), unité extérieure, gaine air |
 | Alertes | HPC, Defr | Haute pression compresseur, défaut circuit froid |
 
-L'alerte Defr est automatiquement masquée ("N/A (clim off)") quand le compresseur est arrêt.
+L'alerte Defr est automatiquement masquée ("N/A (clim off)") quand le compresseur est arrêté.
+
+Les valeurs sentinelles (≤ -40 °C) des capteurs non connectés sont automatiquement filtrées.
 
 **API** : `GET /api/config` retourne `health` dans le snapshot avec les clés santé.
 
