@@ -320,7 +320,7 @@ class AppState:
         if isinstance(data, dict):
             # Extraire la section health AVANT le filtre pour eviter qu'elle
             # ne pollue self.telemetry (le filtre isinstance(v, dict) la laisserait passer).
-            self._health = data.pop("health", {}) or {}
+            self._health = {k: v for k, v in (data.pop("health", {}) or {}).items() if not isinstance(v, (int, float)) or v > -40}
             self.telemetry = {k: v for k, v in data.items() if isinstance(v, dict)}
 
     def _save_telemetry(self):
@@ -551,10 +551,11 @@ class AppState:
 
         Appeler sous self._lock. Renvoie un dict avec les valeurs ou None.
         Priorise self._health (persistance) puis fallback sur telemetry live.
+        Les valeurs sentinelles (<= -40) sont filtrees.
         """
         # Priorite 1 : donnees persistees (disponibles au demarrage)
         if self._health:
-            return dict(self._health)
+            return {k: v for k, v in self._health.items() if not isinstance(v, (int, float)) or v > -40}
         # Priorite 2 : donnees live depuis la telemetrie (fallback)
         for data in self.telemetry.values():
             if not isinstance(data, dict):
@@ -588,6 +589,8 @@ class AppState:
                             f = f / 100.0
                         if key == "RVeI":
                             f = f / 10.0
+                        if f <= -40:
+                            continue
                         health[dst] = int(f) if f == int(f) else f
                     except (TypeError, ValueError):
                         pass
