@@ -8,7 +8,7 @@ type: vmc
 # ── Produits ──
 products:
   DEE_FLY_CUBE:
-    name: "DeeFly-Cub"
+    name: "DeeFly-Cube"
     reference_fields: []
 
 # ── Mapping telemetrie → indicateurs product ──
