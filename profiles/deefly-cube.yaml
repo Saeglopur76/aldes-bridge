@@ -7,7 +7,7 @@ type: vmc
 
 # ── Produits ──
 products:
-  DEE_FLY_CUBE:
+  98D863426510_AIR:      # productid réel de votre box — adaptez si besoin
     name: "DeeFly-Cube"
     reference_fields: []
 
@@ -53,7 +53,19 @@ commands:
       - name: code
         type: enum
         options_from: air_modes
-    - id: set_vacances
+
+  - id: set_speed
+    label: "Changer la vitesse"
+    method: "À CONFIRMER"          # à récupérer en mode proxy via l'appli officielle
+    topic_pattern: "device/{device_id}/messages/devicebound"
+    params:
+      - name: speed
+        type: number
+        min: 0
+        max: 4
+        step: 1
+
+  - id: set_vacances
     label: "Programmer vacances"
     method: changeMode
     topic_pattern: "device/{device_id}/messages/devicebound"
@@ -62,7 +74,8 @@ commands:
         type: datetime
       - name: end
         type: datetime
-   - id: set_cmo
+
+  - id: set_cmo
     label: "Override CMO"
     method: changeCMO
     topic_pattern: "device/{device_id}/messages/devicebound"
@@ -77,101 +90,54 @@ commands:
 ui:
   quick_modes:
     - field: air_modes
-      label: "air modes"
+      label: "Mode air"
   show_thermostats: false
   show_vacations: true
 
-
 # ── Home Assistant MQTT Auto-Discovery ──
 ha_discovery:
-  # Mapping modes Aldes → modes HA HVAC
-  mode_mapping:
-    A: "off"        # Off
-    B: "heat"       # Confort (chauffage)
-    C: "heat"       # Éco (chauffage)
-    D: "heat"       # Programme A (chauffage)
-    E: "heat"       # Programme B (chauffage)
-    F: "cool"       # Confort (climatisation)
-    G: "cool"       # Boost (climatisation)
-    H: "cool"       # Programme C (climatisation)
-    I: "cool"       # Programme D (climatisation)
-  # Mapping presets HA → codes Aldes
-  preset_mapping:
-    none: "B"        # Confort (chauffage)
-    eco: "C"         # Éco
-    comfort: "B"     # Confort (chauffage)
-    boost: "G"       # Boost (climatisation)
-    program_a: "D"   # Programme A (chauffage)
-    program_b: "E"   # Programme B (chauffage)
-    program_c: "H"   # Programme C (climatisation)
-    program_d: "I"   # Programme D (climatisation)
-  # Entités HA à créer
   entities:
-    climate:
-      - id: "aldes_pac"
-        name: "PAC Aldes"
-        icon: "mdi:heat-pump"
-        min_temp: 5
-        max_temp: 30
-        temp_step: 1
+    climate: []
+    water_heater: []
     sensors:
-      - key: "Text"
+      - key: "outside_tpt"
         name: "Température extérieure"
         unit: "°C"
         device_class: "temperature"
         icon: "mdi:thermometer"
-      - key: "MT0"
-        name: "Température intérieure"
+      - key: "ext_tpt"
+        name: "Température extraction"
         unit: "°C"
         device_class: "temperature"
         icon: "mdi:thermometer"
-      - key: "UAM"
-        name: "Mode air"
-        icon: "mdi:fog"
-      - key: "MfAc"
-        name: "Compresseur"
-        binary: true
-        device_class: "running"
-        icon: "mdi:cog"
-    select: []
-    water_heater:
-      - id: "aldes_ballon"
-        name: "Ballon ECS"
-        icon: "mdi:water-boiler"
-    sensors:
-      - key: "Text"
-        name: "Température extérieure"
+      - key: "reject_tpt"
+        name: "Température rejet"
         unit: "°C"
         device_class: "temperature"
         icon: "mdi:thermometer"
-      - key: "MT0"
-        name: "Température intérieure"
-        unit: "°C"
-        device_class: "temperature"
-        icon: "mdi:thermometer"
-      - key: "UAM"
-        name: "Mode air"
-        icon: "mdi:fog"
-      - key: "MfAc"
-        name: "Compresseur"
-        binary: true
-        device_class: "running"
-        icon: "mdi:cog"
-      - key: "NED"
-        name: "Niveau ECS"
-        unit: "%"
-        device_class: "water"
-        icon: "mdi:water-percent"
-      - key: "TBBa"
-        name: "Ballon ECS Bas"
-        unit: "°C"
-        device_class: "temperature"
-        icon: "mdi:thermometer"
-      - key: "TBHa"
-        name: "Ballon ECS Haut"
-        unit: "°C"
-        device_class: "temperature"
-        icon: "mdi:thermometer"
+      - key: "extf_spd"
+        name: "Vitesse extraction"
+        unit: "rpm"
+        icon: "mdi:fan"
+      - key: "vi_spd"
+        name: "Vitesse insufflation"
+        unit: "rpm"
+        icon: "mdi:fan"
+      - key: "extf_flw"
+        name: "Débit extraction"
+        unit: "m³/h"
+        icon: "mdi:weather-windy"
+      - key: "set_spd"
+        name: "Consigne vitesse"
+        icon: "mdi:speedometer"
+      - key: "dtb_ind"
+        name: "Indicateur filtre"
+        icon: "mdi:air-filter"
+    select:
+      - id: "aldes_air_mode"
+        name: "Mode VMC"
+        icon: "mdi:fan"
+        options_from: air_modes
     date:
       - id: "aldes_vacation_start"
         name: "Vacances Début"
