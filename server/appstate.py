@@ -355,6 +355,8 @@ class AppState:
                         f = float(data[key])
                         if key == "PreH":
                             f = f / 100.0
+                        if f <= -40:
+                            continue
                         self._health[key.lower()] = int(f) if f == int(f) else f
                     except (TypeError, ValueError):
                         pass
