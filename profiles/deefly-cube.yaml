@@ -48,49 +48,27 @@ commands:
   - id: set_mode
     label: "Changer le mode"
     method: changeMode
-    topic_pattern: "device/{device_id}/messages/devicebound"
+    topic_pattern: "devices/{device_id}/messages/devicebound"
     params:
       - name: code
         type: enum
         options_from: air_modes
 
-  - id: set_speed
-    label: "Changer la vitesse"
-    method: "À CONFIRMER"          # à récupérer en mode proxy via l'appli officielle
-    topic_pattern: "device/{device_id}/messages/devicebound"
-    params:
-      - name: speed
-        type: number
-        min: 0
-        max: 4
-        step: 1
-
   - id: set_vacances
     label: "Programmer vacances"
     method: changeMode
-    topic_pattern: "device/{device_id}/messages/devicebound"
+    topic_pattern: "devices/{device_id}/messages/devicebound"
     params:
       - name: start
         type: datetime
       - name: end
         type: datetime
 
-  - id: set_cmo
-    label: "Override CMO"
-    method: changeCMO
-    topic_pattern: "device/{device_id}/messages/devicebound"
-    params:
-      - name: value
-        type: enum
-        options:
-          - { code: "1", label: "ON (override)" }
-          - { code: "0", label: "OFF" }
-
 # ── Configuration UI ──
 ui:
   quick_modes:
     - field: air_modes
-      label: "Mode air"
+      label: "Vitesse"
   show_thermostats: false
   show_vacations: true
 
