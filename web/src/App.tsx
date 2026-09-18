@@ -384,6 +384,7 @@ const { messages, lastSnapshot } = useMemo(() => {
               consignes={consignes}
               profile={config?.profile ?? null}
             />
+          )}
           </div>
         )}
         {view === 'health' && (
