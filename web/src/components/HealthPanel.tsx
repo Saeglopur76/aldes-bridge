@@ -15,6 +15,11 @@ function fmtRaw(val: number | null | undefined): string {
   return String(val)
 }
 
+function fmtTemp(val: number | null | undefined): string {
+  if (val === null || val === undefined) return '—'
+  return `${val} °C`
+}
+
 function mfacLabel(val: number | null | undefined): string {
   if (val === null || val === undefined) return '—'
   return val === 0 ? 'Arrêt' : 'Marche'
@@ -45,6 +50,17 @@ export default function HealthPanel({ health }: Props) {
       </div>
     )
   }
+
+  const advancedTemps: { key: keyof HealthData; label: string }[] = [
+    { key: 'tain', label: 'Air entrée' },
+    { key: 'tahl', label: 'Éch. air — bas' },
+    { key: 'tahu', label: 'Éch. air — haut' },
+    { key: 'tehg', label: 'Éch. gaz' },
+    { key: 'tehl', label: 'Éch. liquide' },
+    { key: 'tehu', label: 'Éch. haut' },
+    { key: 'tueh', label: 'Unité ext.' },
+    { key: 'thga', label: 'Gaine air' },
+  ]
 
   return (
     <div className={styles.panel}>
@@ -97,6 +113,18 @@ export default function HealthPanel({ health }: Props) {
               {health.rvei != null ? `${health.rvei} tr/min` : '—'}
             </span>
           </div>
+        </div>
+      </div>
+
+      <div className={styles.card}>
+        <div className={styles.cardTitle}>Températures avancées</div>
+        <div className={styles.grid}>
+          {advancedTemps.map(({ key, label }) => (
+            <div key={key} className={styles.indicator}>
+              <span className={styles.label}>{label}</span>
+              <span className={styles.value}>{fmtTemp(health[key])}</span>
+            </div>
+          ))}
         </div>
       </div>
 

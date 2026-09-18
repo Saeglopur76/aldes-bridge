@@ -204,6 +204,14 @@ export interface HealthData {
   uam?: number | null
   text_ext?: number | null
   rvei?: number | null
+  tain?: number | null
+  tahu?: number | null
+  tahl?: number | null
+  tehg?: number | null
+  tehl?: number | null
+  tehu?: number | null
+  tueh?: number | null
+  thga?: number | null
 }
 
 export interface DiagnosticCheck {
