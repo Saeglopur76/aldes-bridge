@@ -7,7 +7,7 @@ type: vmc
 
 # ── Produits ──
 products:
-  98D863426510_AIR:      # productid réel de votre box — adaptez si besoin
+  DEEFLY_CUBE:
     name: "DeeFly-Cube"
     reference_fields: []
 
