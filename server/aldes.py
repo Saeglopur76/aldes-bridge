@@ -262,7 +262,7 @@ def build_products(state):
     Sans telemetrie, renvoie un product vide (modem "N/A") pour eviter un
     crash de l'integration HA, qui itere toujours la liste.
     """
-     try:
+    try:
         telemetry = dict(state.telemetry)
     except AttributeError:
         telemetry = {}
