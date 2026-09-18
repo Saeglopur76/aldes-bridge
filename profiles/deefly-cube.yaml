@@ -76,7 +76,6 @@ ui:
 ha_discovery:
   entities:
     climate: []
-    water_heater: []
     sensors:
       - key: "outside_tpt"
         name: "Température extérieure"
