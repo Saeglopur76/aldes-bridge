@@ -199,8 +199,23 @@ def build_vmc_indicator(telemetry):
         },
     }
 
-def build_product(telemetry, connected):
+def build_product(telemetry, connected, profile=None):
     """Construit un product au format consomme par l'integration HA."""
+    if profile is not None and getattr(profile, "type", None) == "vmc":
+        return {
+            "modem": telemetry.get("modemid") or "N/A",
+            "serial_number": telemetry.get("productid") or "N/A",
+            "reference": profile.id,
+            "name": profile.name,
+            "type": profile.type,
+            "isConnected": bool(connected),
+            "lastUpdatedDate": _epoch_to_iso(telemetry.get("dt")) or "",
+            "lastUpdatedAt": _epoch_to_iso(telemetry.get("dt")),
+            "updatedAt": _utc_iso(telemetry.get("_upd_at")),
+            "gpsLatitude": 0.0,
+            "gpsLongitude": 0.0,
+            "indicator": build_vmc_indicator(telemetry),
+        }
     reference = _derive_reference(telemetry)
     air_index = int(_num(telemetry.get("UAM"), -1))
     water_index = int(_num(telemetry.get("UDM"), -1))
@@ -247,13 +262,14 @@ def build_products(state):
     Sans telemetrie, renvoie un product vide (modem "N/A") pour eviter un
     crash de l'integration HA, qui itere toujours la liste.
     """
-    try:
+     try:
         telemetry = dict(state.telemetry)
     except AttributeError:
         telemetry = {}
-    products = [build_product(data, state.connected) for data in telemetry.values()]
+    profile = getattr(state, "profile", None)
+    products = [build_product(data, state.connected, profile) for data in telemetry.values()]
     if not products:
-        products = [build_product({}, state.connected)]
+        products = [build_product({}, state.connected, profile)]
     products.sort(key=lambda p: p["serial_number"])
     return products
 
