@@ -377,14 +377,14 @@ const { messages, lastSnapshot } = useMemo(() => {
                 connected={config?.connected ?? false}
                 profile={config?.profile ?? null}
               />
-          ) : (
-            <TempsPanel
-              clientId={config?.client_id ?? null}
-              connected={config?.connected ?? false}
-              consignes={consignes}
-              profile={config?.profile ?? null}
-            />
-          )}
+            ) : (
+              <TempsPanel
+                clientId={config?.client_id ?? null}
+                connected={config?.connected ?? false}
+                consignes={consignes}
+                profile={config?.profile ?? null}
+              />
+            )}
           </div>
         )}
         {view === 'health' && (
