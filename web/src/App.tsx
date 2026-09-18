@@ -14,6 +14,7 @@ import ProfileSelector from './components/ProfileSelector'
 import ConfigPanel from './components/ConfigPanel'
 import DiagnosticPanel from './components/DiagnosticPanel'
 import HealthPanel from './components/HealthPanel'
+import VmcPanel from './components/VmcPanel'
 import './App.css'
 
 const HistoryPanel = lazy(() => import('./components/HistoryPanel'))
@@ -370,6 +371,13 @@ const { messages, lastSnapshot } = useMemo(() => {
       <div className="layout">
         {view === 'temps' && (
           <div className="streamCol">
+            {config?.profile?.type === 'vmc' ? (
+              <VmcPanel
+                clientId={config?.client_id ?? null}
+                connected={config?.connected ?? false}
+                profile={config?.profile ?? null}
+              />
+          ) : (
             <TempsPanel
               clientId={config?.client_id ?? null}
               connected={config?.connected ?? false}
