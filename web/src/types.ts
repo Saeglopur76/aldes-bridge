@@ -89,6 +89,14 @@ export interface VentilationData {
   dln?: number | null
   dple?: number | null
   dmco?: number | null
+    // DeeFly Cube (VMC)
+  outside_temp?: number | null
+  extract_temp?: number | null
+  reject_temp?: number | null
+  extract_speed?: number | null
+  supply_speed?: number | null
+  extract_flow?: number | null
+  speed_setpoint?: number | null
 }
 
 export interface AldesIndicator {
