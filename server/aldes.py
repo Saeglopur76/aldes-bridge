@@ -175,6 +175,29 @@ def build_ventilation(telemetry):
             vent[key.lower()] = val
     return vent if vent else None
 
+def build_vmc_indicator(telemetry):
+    """Construit l'indicator pour un profil VMC (ex: DeeFly Cube)."""
+    return {
+        "qte_eau_chaude": None,
+        "tmp_principal": None,
+        "current_air_mode": telemetry.get("current_mode"),
+        "current_water_mode": None,
+        "date_debut_vac": None,
+        "date_fin_vac": None,
+        "hors_gel": False,
+        "antilegionelles": False,
+        "settings": {"people": None},
+        "thermostats": [],
+        "ventilation": {
+            "outside_temp": _num(telemetry.get("outside_tpt")),
+            "extract_temp": _num(telemetry.get("ext_tpt")),
+            "reject_temp": _num(telemetry.get("reject_tpt")),
+            "extract_speed": _num(telemetry.get("extf_spd")),
+            "supply_speed": _num(telemetry.get("vi_spd")),
+            "extract_flow": _num(telemetry.get("extf_flw")),
+            "speed_setpoint": _num(telemetry.get("set_spd")),
+        },
+    }
 
 def build_product(telemetry, connected):
     """Construit un product au format consomme par l'integration HA."""
