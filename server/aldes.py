@@ -196,6 +196,7 @@ def build_vmc_indicator(telemetry):
             "supply_speed": _num(telemetry.get("vi_spd")),
             "extract_flow": _num(telemetry.get("extf_flw")),
             "speed_setpoint": _num(telemetry.get("set_spd")),
+            "exchanger_power": _num(telemetry.get("echange_pwr")),
         },
     }
 
