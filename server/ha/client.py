@@ -140,6 +140,7 @@ class HADiscoveryClient(threading.Thread):
             (f"{self.prefix}/set/vacation_start", 1),
             (f"{self.prefix}/set/vacation_end", 1),
             (f"{self.prefix}/set/vacation_enable", 1),
+            (f"{self.prefix}/set/vmc_speed", 1),
         ]
         for zi in range(10):
             cmd_topics.append((f"{self.prefix}/set/zone{zi}/consigne", 1))
@@ -207,6 +208,8 @@ class HADiscoveryClient(threading.Thread):
             self._safe_send(mqtt.build_pubrel(pid))
         elif ptype == mqtt.PT_SUBACK:
             _log.info("ha-discovery: <-- MQTT SUBACK")
+        elif topic == f"{self.prefix}/set/vmc_speed":
+            self._handle_vmc_speed_command(payload)
         elif ptype in (mqtt.PT_PUBACK, mqtt.PT_PUBCOMP):
             pass
         else:
@@ -251,6 +254,16 @@ class HADiscoveryClient(threading.Thread):
             return
         self._inject_aldes_command("changeMode", [aldes_code])
         _log.info("ha-discovery: mode %s -> Aldes %s", ha_mode, aldes_code)
+
+    def _handle_vmc_speed_command(self, payload):
+        label = payload.strip()
+        profile = getattr(self.state, "profile", None)
+        aldes_code = profile_code_for_label(profile, "air_modes", label, {})
+        if not aldes_code:
+            _log.warning("ha-discovery: vitesse VMC inconnue: %s", label)
+            return
+        self._inject_aldes_command("changeMode", [aldes_code])
+        _log.info("ha-discovery: vitesse VMC %s -> Aldes %s", label, aldes_code)
 
     def _handle_consigne_command(self, payload, zone=0):
         try:
@@ -446,6 +459,10 @@ class HADiscoveryClient(threading.Thread):
         self._publish_telemetry_data(data, include_zone_aliases=False)
 
     def _publish_telemetry_data(self, data, include_zone_aliases=False):
+        profile = getattr(self.state, "profile", None)
+        if profile and getattr(profile, "type", None) == "vmc":
+            self._publish_vmc_telemetry_data(data)
+            return
         air_mode_code = self._get_air_mode_code(data)
         if air_mode_code:
             ha_mode = ALDES_TO_HA_MODE.get(air_mode_code, "off")
@@ -560,6 +577,34 @@ class HADiscoveryClient(threading.Thread):
                          topic=f"{self.prefix}/state/...",
                          payload=data, source="bridge", destination="ha")
 
+    def _publish_vmc_telemetry_data(self, data):
+        profile = getattr(self.state, "profile", None)
+        current_code = data.get("current_mode")
+        if current_code:
+            label = profile_label_for_code(profile, "air_modes", current_code, {})
+            if label:
+                self._safe_send(mqtt.build_publish(
+                    f"{self.prefix}/state/vmc_speed", label, qos=1, retain=True
+                ))
+    
+        field_map = {
+            "vmc_outside_temp": "outside_tpt",
+            "vmc_extract_temp": "ext_tpt",
+            "vmc_reject_temp": "reject_tpt",
+            "vmc_extract_speed": "extf_spd",
+            "vmc_supply_speed": "vi_spd",
+            "vmc_extract_flow": "extf_flw",
+            "vmc_exchanger_power": "echange_pwr",
+        }
+        for suffix, raw_key in field_map.items():
+            val = safe_float(data.get(raw_key))
+            if val is None:
+                continue
+            fmt = f"{val:.1f}" if suffix.endswith("_temp") else f"{val:.0f}"
+            self._safe_send(mqtt.build_publish(
+                f"{self.prefix}/state/sensor/{suffix}", fmt, qos=1, retain=True
+            ))
+    
     def _publish_vacation_state(self, data):
         dvac = data.get("Dvac")
         fvac = data.get("Fvac")
