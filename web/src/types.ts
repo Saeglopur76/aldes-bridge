@@ -97,6 +97,7 @@ export interface VentilationData {
   supply_speed?: number | null
   extract_flow?: number | null
   speed_setpoint?: number | null
+  exchanger_power?: number | null
 }
 
 export interface AldesIndicator {
