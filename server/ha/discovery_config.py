@@ -56,6 +56,8 @@ def detect_active_zones(data):
 
 def build_discovery_config(device_id, profile, prefix="aldes", data=None,
                            previous_active_zones=None, zone_sensors=False):
+    if profile and getattr(profile, "type", None) == "vmc":
+        return build_vmc_discovery_config(device_id, profile, prefix)
     configs = []
     discovery_prefix = "homeassistant"
 
@@ -415,5 +417,79 @@ def build_discovery_config(device_id, profile, prefix="aldes", data=None,
                 configs.append((
                     f"{discovery_prefix}/sensor/zone{zi}_temp/config", "",
                 ))
+
+def build_vmc_discovery_config(device_id, profile, prefix="aldes"):
+    configs = []
+    discovery_prefix = "homeassistant"
+    device_info = {
+        "identifiers": [f"aldes_{device_id}"],
+        "name": profile.name if profile else "Aldes VMC",
+        "manufacturer": "Aldes",
+        "model": profile.name if profile else "VMC",
+    }
+    avail = {
+        "availability_topic": f"{prefix}/state/available",
+        "payload_available": "online",
+        "payload_not_available": "offline",
+    }
+
+    labels = profile_mode_labels(profile, "air_modes", {})
+    select_config = {
+        "name": "Vitesse VMC",
+        "unique_id": f"aldes_{device_id}_vmc_speed",
+        "device": device_info,
+        "options": labels,
+        "state_topic": f"{prefix}/state/vmc_speed",
+        "command_topic": f"{prefix}/set/vmc_speed",
+        "icon": "mdi:fan",
+        **avail,
+    }
+    configs.append((f"{discovery_prefix}/select/vmc_speed/config", json.dumps(select_config, ensure_ascii=False)))
+
+    vmc_sensors = [
+        ("vmc_outside_temp", "Température extérieure", "°C", "temperature", "mdi:thermometer"),
+        ("vmc_extract_temp", "Température extraction", "°C", "temperature", "mdi:thermometer"),
+        ("vmc_reject_temp", "Température rejet", "°C", "temperature", "mdi:thermometer"),
+        ("vmc_extract_speed", "Vitesse extraction", "rpm", None, "mdi:fan"),
+        ("vmc_supply_speed", "Vitesse insufflation", "rpm", None, "mdi:fan"),
+        ("vmc_extract_flow", "Débit extraction", "m³/h", None, "mdi:air-filter"),
+        ("vmc_exchanger_power", "Puissance échangeur", "W", "power", "mdi:heat-wave"),
+    ]
+    for suffix, name, unit, device_class, icon in vmc_sensors:
+        cfg = {
+            "name": name,
+            "unique_id": f"aldes_{device_id}_{suffix}",
+            "state_topic": f"{prefix}/state/sensor/{suffix}",
+            "unit_of_measurement": unit,
+            "device": device_info,
+            "icon": icon,
+            **avail,
+        }
+        if device_class:
+            cfg["device_class"] = device_class
+        configs.append((f"{discovery_prefix}/sensor/{suffix}/config", json.dumps(cfg, ensure_ascii=False)))
+
+    # Santé du bridge (identique à la PAC)
+    health_entities = [
+        ("binary_sensor", "bridge_status", {
+            "name": "Aldes Bridge Status", "state_topic": f"{prefix}/health/status",
+            "payload_on": "degraded", "payload_off": "ok", "device_class": "problem", "icon": "mdi:heart-pulse",
+        }),
+        ("sensor", "bridge_uptime", {
+            "name": "Aldes Bridge Uptime", "state_topic": f"{prefix}/health/uptime",
+            "unit_of_measurement": "s", "device_class": "duration", "icon": "mdi:timer-outline",
+        }),
+        ("binary_sensor", "mqtt_connected", {
+            "name": "Aldes MQTT Connected", "state_topic": f"{prefix}/health/mqtt_connected",
+            "payload_on": "true", "payload_off": "false", "device_class": "connectivity", "icon": "mdi:lan-connect",
+        }),
+        ("binary_sensor", "box_connected", {
+            "name": "Aldes Box Connected", "state_topic": f"{prefix}/health/box_connected",
+            "payload_on": "true", "payload_off": "false", "device_class": "connectivity", "icon": "mdi:router-wireless",
+        }),
+    ]
+    for platform, suffix, base in health_entities:
+        cfg = {**base, "unique_id": f"aldes_{device_id}_{suffix}", "device": device_info, **avail}
+        configs.append((f"{discovery_prefix}/{platform}/{suffix}/config", json.dumps(cfg, ensure_ascii=False)))
 
     return configs
