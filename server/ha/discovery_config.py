@@ -453,7 +453,7 @@ def build_vmc_discovery_config(device_id, profile, prefix="aldes"):
         ("vmc_extract_speed", "Vitesse extraction", "rpm", None, "mdi:fan"),
         ("vmc_supply_speed", "Vitesse insufflation", "rpm", None, "mdi:fan"),
         ("vmc_extract_flow", "Débit extraction", "m³/h", None, "mdi:air-filter"),
-        ("vmc_exchanger_power", "Puissance échangeur", "W", "power", "mdi:heat-wave"),
+        ("vmc_exchanger_power", "Puissance échangeur", "W", "power", "mdi:xamarin"),
     ]
     for suffix, name, unit, device_class, icon in vmc_sensors:
         cfg = {
