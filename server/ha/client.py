@@ -208,8 +208,6 @@ class HADiscoveryClient(threading.Thread):
             self._safe_send(mqtt.build_pubrel(pid))
         elif ptype == mqtt.PT_SUBACK:
             _log.info("ha-discovery: <-- MQTT SUBACK")
-        elif topic == f"{self.prefix}/set/vmc_speed":
-            self._handle_vmc_speed_command(payload)
         elif ptype in (mqtt.PT_PUBACK, mqtt.PT_PUBCOMP):
             pass
         else:
@@ -243,6 +241,8 @@ class HADiscoveryClient(threading.Thread):
                 self._handle_vacation_end_command(payload)
             elif topic == f"{self.prefix}/set/vacation_enable":
                 self._handle_vacation_enable_command(payload)
+            elif topic == f"{self.prefix}/set/vmc_speed":
+                self._handle_vmc_speed_command(payload)
         except Exception as exc:
             _log.warning("ha-discovery: erreur commande %s: %s", topic, exc)
 
