@@ -105,6 +105,10 @@ export default function VmcPanel({ pollMs = 5000, clientId, connected, profile }
                 <span className={styles.statValue}>{fmtDeg(v?.reject_temp)}</span>
               </div>
               <div className={styles.stat}>
+                <span className={styles.statLabel}>Puissance échangeur</span>
+                <span className={styles.statValue}>{fmtNum(v?.exchanger_power, 'W')}</span>
+              </div>
+              <div className={styles.stat}>
                 <span className={styles.statLabel}>Vitesse extraction</span>
                 <span className={styles.statValue}>{fmtNum(v?.extract_speed, 'tr/min')}</span>
               </div>
