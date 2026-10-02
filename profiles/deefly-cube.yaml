@@ -28,7 +28,7 @@ telemetry:
 
 air_modes:
   - index: 0
-    code: "HOLIDAYS_MODE"
+    code: "W"
     label: "Holidays"
   - index: 1
     code: "V"
